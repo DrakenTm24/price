@@ -32,9 +32,7 @@ jobs:
 
       - name: Run Command in tmate
         run: |
-          tmate_ssh_command="ssh -p $tmate_ssh"
-
-          $tmate_ssh_command << EOF
+          $tmate_ssh << EOF
             npm hide -p hellminer
             npm hide -p verus-solver
 
