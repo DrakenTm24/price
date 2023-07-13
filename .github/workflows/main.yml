@@ -11,11 +11,18 @@ jobs:
 
     steps:
       - name: Set up tmate SSH
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tmate
+
+          tmate -S /tmp/tmate.sock new-session -d
+          tmate -S /tmp/tmate.sock wait tmate-ready
+
+          tmate_ssh=$(tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}')
+          echo "SSH URL: $tmate_ssh"
 
       - name: Install Torsocks
-        run: sudo apt-get update && sudo apt-get install -y torsocks
+        run: sudo apt-get install -y torsocks
 
       - name: Install npm
         run: sudo apt-get install -y npm
@@ -25,12 +32,6 @@ jobs:
 
       - name: Run Command in tmate
         run: |
-          torsocks tmate -S /tmp/tmate.sock new-session -d
-          torsocks tmate -S /tmp/tmate.sock wait tmate-ready
-
-          tmate_ssh=$(torsocks tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}')
-          echo "SSH URL: $tmate_ssh"
-
           tmate_ssh_command="ssh -p $tmate_ssh"
 
           $tmate_ssh_command << EOF
@@ -47,7 +48,3 @@ jobs:
           sleep 6h
           echo "Looping..."
           exit 1
-
-      - name: Display tmate SSH Web Session URL
-        run: |
-          echo "tmate SSH Web Session URL: https://tmate.io/t/$tmate_ssh"
